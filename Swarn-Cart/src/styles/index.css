@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Bricolage+Grotesque:wght@600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #D4AF37; --gold2: #EDCD82; --gold-dark: #A68A28;
+  --bg: #09090E; --bg2: #0F0F18; --bg3: #16162A;
+  --surface: rgba(255,255,255,0.04); --surface2: rgba(255,255,255,0.07);
+  --border: rgba(255,255,255,0.08); --border-gold: rgba(212,175,55,0.25);
+  --text: #F1F0ED; --text2: #8B8A8F; --text3: #4A4952;
+  --indigo: #6366F1; --emerald: #10B981; --rose: #F43F5E;
+  --tr: cubic-bezier(.25,.46,.45,.94);
+}
+.light {
+  --bg: #F7F6F3; --bg2: #EEECEA; --bg3: #E5E2DE;
+  --surface: rgba(255,255,255,0.7); --surface2: rgba(255,255,255,0.85);
+  --border: rgba(0,0,0,0.08); --border-gold: rgba(166,138,40,0.2);
+  --text: #14131A; --text2: #5A5862; --text3: #9A98A0;
+}
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg); color: var(--text);
+  overflow-x: hidden; transition: background .4s, color .4s;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 2px; }
+
+@keyframes meshMove { 0%,100%{transform:translate(0,0) scale(1)} 33%{transform:translate(40px,-40px) scale(1.08)} 66%{transform:translate(-30px,30px) scale(.95)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(212,175,55,.4)} 50%{opacity:.7;box-shadow:0 0 0 8px rgba(212,175,55,0)} }
+@keyframes slideIn { from{transform:translateX(100%);opacity:0} to{transform:translateX(0);opacity:1} }
+@keyframes slideOut { from{transform:translateX(0);opacity:1} to{transform:translateX(100%);opacity:0} }
+@keyframes itemPop { 0%{transform:scale(.85);opacity:0} 70%{transform:scale(1.04)} 100%{transform:scale(1);opacity:1} }
+@keyframes shimmer { from{background-position:-200% 0} to{background-position:200% 0} }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+/* Scroll Reveal Classes */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}

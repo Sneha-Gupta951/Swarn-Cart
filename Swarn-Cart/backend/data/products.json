@@ -1,0 +1,8 @@
+[
+  { "id": 1, "name": "Royal Silk Saree", "category": "Ethnic Wear", "price": 12499, "emoji": "🥻", "badge": "Bestseller", "rating": 4.9 },
+  { "id": 2, "name": "ProBook Elite X1", "category": "Electronics", "price": 89999, "emoji": "💻", "badge": "New", "rating": 4.8 },
+  { "id": 3, "name": "Aurum Watch S9", "category": "Accessories", "price": 24999, "emoji": "⌚", "badge": "Limited", "rating": 4.7 },
+  { "id": 4, "name": "Vedic Wellness Kit", "category": "Health", "price": 3299, "emoji": "🌿", "badge": null, "rating": 4.6 },
+  { "id": 5, "name": "Artisan Pottery Set", "category": "Home Décor", "price": 7850, "emoji": "🏺", "badge": "Trending", "rating": 4.8 },
+  { "id": 6, "name": "Vega Pro 15 Ultra", "category": "Smartphones", "price": 54999, "emoji": "📱", "badge": "Hot", "rating": 4.9 }
+]
