@@ -23,6 +23,12 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// Request logger
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 // JWT Helper
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET || 'swarn_secret_123', { expiresIn: '30d' });
@@ -124,6 +130,21 @@ app.get('/api/features', async (req, res) => {
         res.json(features);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching features', error: error.message });
+    }
+});
+
+app.get('/api/categories', async (req, res) => {
+    try {
+        const categories = await Product.distinct('category');
+        const categoryData = categories.map(cat => ({
+            name: cat,
+            // Using professional placeholder images for categories
+            coverImage: `https://source.unsplash.com/featured/?${cat.toLowerCase()}`,
+            count: 0 // Optional: could count products if needed
+        }));
+        res.json(categoryData);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching categories', error: error.message });
     }
 });
 

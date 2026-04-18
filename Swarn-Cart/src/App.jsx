@@ -7,6 +7,7 @@ import { useScrollReveal } from './hooks/useScrollReveal';
 import { API_URL } from './data/constants';
 import HomePage from './pages/HomePage';
 import FeaturesPage from './pages/FeaturesPage';
+import CategoryPage from './pages/CategoryPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './styles/index.css';
 
@@ -103,6 +104,17 @@ function AppContent() {
           }
         />
         <Route path="/features" element={<FeaturesPage />} />
+        <Route 
+          path="/category/:slug" 
+          element={
+            <CategoryPage 
+              cart={cart} 
+              wishlist={wishlist} 
+              addToCart={addToCart} 
+              toggleWishlist={toggleWishlist} 
+            />
+          } 
+        />
       </Routes>
 
       <CartDrawer
