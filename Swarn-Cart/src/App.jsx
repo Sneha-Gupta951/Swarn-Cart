@@ -20,6 +20,7 @@ function AppContent() {
   const [wishlist, setWishlist] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [authModal, setAuthModal] = useState(null);
+  const [search, setSearch] = useState('');
   const location = useLocation();
 
   useScrollReveal();
@@ -86,6 +87,8 @@ function AppContent() {
         onCartClick={() => setDrawerOpen(true)} 
         onLoginClick={() => setAuthModal('login')}
         onSignupClick={() => setAuthModal('signup')}
+        search={search}
+        setSearch={setSearch}
       />
 
       <Routes location={location} key={location.pathname}>
@@ -100,6 +103,8 @@ function AppContent() {
               onCartClick={() => setDrawerOpen(true)}
               products={products}
               loading={loadingProducts}
+              search={search}
+              setSearch={setSearch}
             />
           }
         />
@@ -112,6 +117,7 @@ function AppContent() {
               wishlist={wishlist} 
               addToCart={addToCart} 
               toggleWishlist={toggleWishlist} 
+              search={search}
             />
           } 
         />

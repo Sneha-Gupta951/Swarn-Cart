@@ -126,7 +126,7 @@ function Drawer({ open, onClose, dark, setDark }) {
 }
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
-export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, onLoginClick, onSignupClick }) {
+export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, onLoginClick, onSignupClick, search, setSearch }) {
   const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -152,6 +152,25 @@ export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, o
       transition: 'all 0.4s',
     },
     actions: { display: 'flex', alignItems: 'center', gap: '1rem' },
+    searchContainer: {
+      flex: 1,
+      maxWidth: 500,
+      margin: '0 2rem',
+      position: 'relative',
+      display: window.innerWidth < 768 ? 'none' : 'block' // Simple responsive hide
+    },
+    searchInput: {
+      width: '100%',
+      padding: '.6rem 1rem .6rem 2.6rem',
+      background: 'rgba(255,255,255,0.03)',
+      border: '1px solid rgba(212,175,55,0.15)',
+      borderRadius: 12,
+      color: '#fff',
+      fontSize: '.85rem',
+      outline: 'none',
+      transition: 'all 0.3s',
+      fontFamily: "'Plus Jakarta Sans', sans-serif"
+    },
     iconBtn: {
       position: 'relative', width: 40, height: 40, borderRadius: 8,
       background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(212,175,55,0.15)',
@@ -199,6 +218,20 @@ export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, o
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <Link to="/" style={{ textDecoration:'none', color:'var(--gold)', fontWeight:800, fontSize:'1.4rem' }}>SWARN-CART</Link>
+        </div>
+
+        {/* Search Bar */}
+        <div style={s.searchContainer}>
+          <span style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }}>🔍</span>
+          <input 
+            type="text" 
+            placeholder="Search for electronics, fashion, decor..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={s.searchInput}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--gold)'; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'rgba(212,175,55,0.15)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
+          />
         </div>
 
         <div style={s.actions}>

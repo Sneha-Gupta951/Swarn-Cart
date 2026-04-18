@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { API_URL } from '../data/constants';
 import { ProductCard } from '../components/ProductCard';
 
-export default function CategoryPage({ cart, wishlist, addToCart, toggleWishlist }) {
+export default function CategoryPage({ cart, wishlist, addToCart, toggleWishlist, search }) {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -27,12 +27,18 @@ export default function CategoryPage({ cart, wishlist, addToCart, toggleWishlist
       });
   }, [slug]);
 
+  const filteredProducts = useMemo(() => {
+    return products.filter(p => 
+      p.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [products, search]);
+
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return products.slice(start, start + itemsPerPage);
-  }, [products, currentPage]);
+    return filteredProducts.slice(start, start + itemsPerPage);
+  }, [filteredProducts, currentPage]);
 
-  const totalPages = Math.ceil(products.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
   const s = {
     grid: {
