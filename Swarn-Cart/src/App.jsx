@@ -42,6 +42,14 @@ function AppContent() {
     document.body.className = dark ? '' : 'light';
   }, [dark]);
 
+  // Clear cart and wishlist on logout
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setCart([]);
+      setWishlist([]);
+    }
+  }, [isAuthenticated]);
+
   const addToCart = useCallback((product) => {
     if (!isAuthenticated) {
       setAuthModal('login');
