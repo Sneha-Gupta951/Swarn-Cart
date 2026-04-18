@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { fmt } from '../utils/format';
 
 export function CartDrawer({ cart, open, onClose, onRemove, onQtyChange }) {
+  const navigate = useNavigate();
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + tax;
@@ -100,13 +102,18 @@ export function CartDrawer({ cart, open, onClose, onRemove, onQtyChange }) {
                 💡 Add {fmt(50000 - subtotal)} more for FREE shipping!
               </div>
             )}
-            <button style={{
-              width:'100%', padding:'.9rem', background:'var(--gold)', color:'#000',
-              fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:800, fontSize:'.9rem',
-              letterSpacing:'.06em', textTransform:'uppercase', border:'none',
-              borderRadius:8, cursor:'pointer', transition:'all .3s',
-              boxShadow:'0 4px 20px rgba(212,175,55,.35)',
-            }}
+            <button 
+              onClick={() => {
+                onClose();
+                navigate('/checkout');
+              }}
+              style={{
+                width:'100%', padding:'.9rem', background:'var(--gold)', color:'#000',
+                fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:800, fontSize:'.9rem',
+                letterSpacing:'.06em', textTransform:'uppercase', border:'none',
+                borderRadius:8, cursor:'pointer', transition:'all .3s',
+                boxShadow:'0 4px 20px rgba(212,175,55,.35)',
+              }}
               onMouseEnter={e => e.currentTarget.style.transform='translateY(-2px)'}
               onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
             >Proceed to Checkout →</button>

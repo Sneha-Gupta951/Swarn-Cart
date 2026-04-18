@@ -1,6 +1,0 @@
-[
-  { "icon": "⚡", "title": "Smart Cart Sync", "desc": "Real-time sync across all your sessions. Add on mobile, checkout on desktop — seamlessly.", "color": "#D4AF37" },
-  { "icon": "📱", "title": "Multi-Device Cart", "desc": "Your cart follows you everywhere. Log in from any device and pick up right where you left off.", "color": "#6366F1" },
-  { "icon": "🧠", "title": "AI Suggestions", "desc": "Our neural engine learns your taste and recommends what you'll actually love — not just what's trending.", "color": "#10B981" },
-  { "icon": "💰", "title": "Budget Tracking", "desc": "Set spending limits, get real-time alerts and visual breakdowns. Shop smart, never overspend.", "color": "#EF4444" }
-]

@@ -7,7 +7,10 @@ import { useScrollReveal } from './hooks/useScrollReveal';
 import { API_URL } from './data/constants';
 import HomePage from './pages/HomePage';
 import FeaturesPage from './pages/FeaturesPage';
-import CategoryPage from './pages/CategoryPage';
+import CategoryHome from './pages/CategoryHome';
+import ProductsPage from './pages/ProductsPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrdersPage from './pages/OrdersPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './styles/index.css';
 
@@ -110,17 +113,32 @@ function AppContent() {
         />
         <Route path="/features" element={<FeaturesPage />} />
         <Route 
-          path="/category/:slug" 
+          path="/categories" 
+          element={<CategoryHome products={products} loading={loadingProducts} />} 
+        />
+        <Route 
+          path="/products" 
           element={
-            <CategoryPage 
-              cart={cart} 
-              wishlist={wishlist} 
-              addToCart={addToCart} 
-              toggleWishlist={toggleWishlist} 
-              search={search}
+            <ProductsPage 
+              products={products} 
+              loading={loadingProducts}
+              cart={cart}
+              addToCart={addToCart}
+              wishlist={wishlist}
+              toggleWishlist={toggleWishlist}
             />
           } 
         />
+        <Route 
+          path="/checkout" 
+          element={
+            <CheckoutPage 
+              cart={cart} 
+              clearCart={() => setCart([])} 
+            />
+          } 
+        />
+        <Route path="/orders" element={<OrdersPage />} />
       </Routes>
 
       <CartDrawer
