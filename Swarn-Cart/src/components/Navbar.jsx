@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 // ── Drawer Component ──────────────────────────────────────────────────────────
@@ -7,9 +7,10 @@ function Drawer({ open, onClose, dark, setDark }) {
   const { user, logout } = useAuth();
   const navLinks = [
     { label: 'Home', icon: '✦', to: '/' },
+    { label: 'Categories', icon: '◈', to: '/categories' },
+    { label: 'Products', icon: '◎', to: '/products' },
     { label: 'Features', icon: '◈', to: '/features' },
-    { label: 'Products', icon: '◎', to: '/#products' },
-    { label: 'About', icon: '◇', to: '/#about' },
+    { label: 'My Orders', icon: '📦', to: '/orders' },
   ];
 
   const categories = ['Electronics', 'Clothing', 'Home Decor', 'Beauty', 'Footwear', 'Accessories', 'Grocery', 'Fitness'];
@@ -127,6 +128,7 @@ function Drawer({ open, onClose, dark, setDark }) {
 
 // ── Navbar ────────────────────────────────────────────────────────────────────
 export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, onLoginClick, onSignupClick, search, setSearch }) {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -218,6 +220,14 @@ export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, o
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <Link to="/" style={{ textDecoration:'none', color:'var(--gold)', fontWeight:800, fontSize:'1.4rem' }}>SWARN-CART</Link>
+          
+          <div style={{ display: window.innerWidth < 1024 ? 'none' : 'flex', gap:'1.5rem', marginLeft:'2rem' }}>
+            <Link to="/" style={{ color:'#fff', textDecoration:'none', fontSize:'.9rem', fontWeight: 600 }}>Home</Link>
+            <Link to="/categories" style={{ color:'var(--gold)', textDecoration:'none', fontSize:'.9rem', fontWeight: 700, display:'flex', alignItems:'center', gap:4 }}>
+              Categories <span style={{fontSize: '0.6rem', background: 'var(--gold)', color: '#000', padding: '1px 4px', borderRadius: 4, fontWeight: 800}}>NEW</span>
+            </Link>
+            <Link to="/products" style={{ color:'#fff', textDecoration:'none', fontSize:'.9rem', fontWeight: 600 }}>Products</Link>
+          </div>
         </div>
 
         {/* Search Bar */}
@@ -267,8 +277,8 @@ export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, o
                          <span style={{ fontSize: '.7rem', opacity: 0.6 }}>{user.email}</span>
                        </div>
                     </div>
-                    <div style={s.dropdownItem} onClick={() => {/* Navigate to settings */}}>
-                      ⚙️ Settings
+                    <div style={s.dropdownItem} onClick={() => navigate('/orders')}>
+                      📦 My Orders
                     </div>
                     <div 
                       style={{ ...s.dropdownItem, color: '#F43F5E', borderBottom: 'none' }} 

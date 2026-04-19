@@ -4,15 +4,13 @@ import { API_URL } from '../data/constants';
 
 const categoryIcons = {
     'Electronics': '💻',
-    'Fashion': '👔',
+    'Clothing': '👔',
     'Home Decor': '🏠',
-    'Books': '📚',
-    'Groceries': '🍎',
     'Beauty': '💄',
-    'Sports': '⚽',
-    'Toys': '🧸',
-    'Furniture': '🛋️',
-    'Automotive': '🚗'
+    'Footwear': '👟',
+    'Accessories': '⌚',
+    'Grocery': '🍎',
+    'Fitness': '🏋️'
 };
 
 export function AntiGravityCategoryGrid() {
@@ -120,9 +118,7 @@ function CategoryTile({ category, index }) {
 
     return (
         <Link 
-            to={`/category/${encodeURIComponent(category.name)}`}
-            target="_blank"
-            rel="noopener noreferrer"
+            to={`/products?category=${encodeURIComponent(category.name)}`}
             className="floating-tile"
             style={{
                 textDecoration: 'none',

@@ -53,7 +53,7 @@ function CategoryCard({ category }) {
 
   return (
     <Link 
-      to={`/category/${encodeURIComponent(category.name)}`}
+      to={`/products?category=${encodeURIComponent(category.name)}`}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
       style={{

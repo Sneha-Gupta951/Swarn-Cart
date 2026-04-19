@@ -7,7 +7,10 @@ import { useScrollReveal } from './hooks/useScrollReveal';
 import { API_URL } from './data/constants';
 import HomePage from './pages/HomePage';
 import FeaturesPage from './pages/FeaturesPage';
-import CategoryPage from './pages/CategoryPage';
+import CategoryHome from './pages/CategoryHome';
+import ProductsPage from './pages/ProductsPage';
+import CheckoutPage from './pages/CheckoutPage';
+import OrdersPage from './pages/OrdersPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './styles/index.css';
 
@@ -37,6 +40,34 @@ function AppContent() {
         setLoadingProducts(false);
       });
   }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setCart([]);
+      setWishlist([]);
+    } else if (user && user.wishlist) {
+      // Initialize wishlist from user data on login
+      const initialWishlist = products.filter(p => user.wishlist.includes(p.id));
+      if (initialWishlist.length > 0 && wishlist.length === 0) {
+        setWishlist(initialWishlist);
+      }
+    }
+  }, [isAuthenticated, user, products]);
+
+  // Sync wishlist to backend
+  useEffect(() => {
+    if (isAuthenticated && user && wishlist.length > 0) {
+      const wishlistIds = wishlist.map(p => p.id);
+      fetch(`${API_URL}/wishlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify({ wishlist: wishlistIds })
+      }).catch(err => console.error('Failed to sync wishlist:', err));
+    }
+  }, [wishlist, isAuthenticated, user]);
 
   useEffect(() => {
     document.body.className = dark ? '' : 'light';
@@ -118,17 +149,32 @@ function AppContent() {
         />
         <Route path="/features" element={<FeaturesPage />} />
         <Route 
-          path="/category/:slug" 
+          path="/categories" 
+          element={<CategoryHome products={products} loading={loadingProducts} />} 
+        />
+        <Route 
+          path="/products" 
           element={
-            <CategoryPage 
-              cart={cart} 
-              wishlist={wishlist} 
-              addToCart={addToCart} 
-              toggleWishlist={toggleWishlist} 
-              search={search}
+            <ProductsPage 
+              products={products} 
+              loading={loadingProducts}
+              cart={cart}
+              addToCart={addToCart}
+              wishlist={wishlist}
+              toggleWishlist={toggleWishlist}
             />
           } 
         />
+        <Route 
+          path="/checkout" 
+          element={
+            <CheckoutPage 
+              cart={cart} 
+              clearCart={() => setCart([])} 
+            />
+          } 
+        />
+        <Route path="/orders" element={<OrdersPage />} />
       </Routes>
 
       <CartDrawer
