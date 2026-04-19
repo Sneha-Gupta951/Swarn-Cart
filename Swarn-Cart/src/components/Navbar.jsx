@@ -280,9 +280,6 @@ export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, o
                     <div style={s.dropdownItem} onClick={() => navigate('/orders')}>
                       📦 My Orders
                     </div>
-                    <div style={s.dropdownItem} onClick={() => {/* Navigate to settings */}}>
-                      ⚙️ Settings
-                    </div>
                     <div 
                       style={{ ...s.dropdownItem, color: '#F43F5E', borderBottom: 'none' }} 
                       onClick={() => { logout(); setShowSettings(false); }}

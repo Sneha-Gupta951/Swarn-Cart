@@ -4,6 +4,10 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const { OAuth2Client } = require('google-auth-library');
+const User = require('./models/User');
+const Product = require('./models/Product');
+const Order = require('./models/Order');
+const { protect } = require('./middleware/authMiddleware');
 
 dotenv.config();
 
@@ -19,24 +23,13 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// --- MOCK DATA FALLBACK ---
-const CATEGORIES = ['Electronics', 'Clothing', 'Home Decor', 'Beauty', 'Footwear', 'Accessories', 'Grocery', 'Fitness'];
-const MOCK_PRODUCTS = Array.from({ length: 50 }, (_, i) => ({
-    id: `mock-${i + 1}`,
-    name: `Premium ${CATEGORIES[i % CATEGORIES.length]} Item ${i + 1}`,
-    price: Math.floor(Math.random() * 50000) + 1000,
-    image: `https://loremflickr.com/600/600/${CATEGORIES[i % CATEGORIES.length].toLowerCase()}?lock=${i}`,
-    category: CATEGORIES[i % CATEGORIES.length],
-    liked: i % 5 === 0
-}));
-
 // Connect to Database
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 });
         console.log('✅ MongoDB Connected');
     } catch (err) {
-        console.log('❌ MongoDB Connection Error. Serving Mock Data.');
+        console.log('❌ MongoDB Connection Error:', err.message);
     }
 };
 connectDB();
@@ -55,15 +48,31 @@ app.post('/api/auth/google', async (req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
-        console.log(`👤 Google Login success: ${payload.email}`);
         
-        // Return user info and token
+        let user = await User.findOne({ googleId: payload.sub });
+        
+        if (!user) {
+            user = await User.create({
+                googleId: payload.sub,
+                name: payload.name,
+                email: payload.email,
+                picture: payload.picture
+            });
+        } else {
+            // Update profile if changed
+            user.name = payload.name;
+            user.picture = payload.picture;
+            await user.save();
+        }
+
         res.json({
-            _id: payload.sub,
-            name: payload.name,
-            email: payload.email,
-            picture: payload.picture,
-            token: generateToken(payload.sub)
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            picture: user.picture,
+            addresses: user.addresses,
+            wishlist: user.wishlist,
+            token: generateToken(user._id)
         });
     } catch (error) {
         console.error("❌ Google Auth Error:", error.message);
@@ -71,18 +80,98 @@ app.post('/api/auth/google', async (req, res) => {
     }
 });
 
-// Routes
-app.get('/api/products', (req, res) => {
-    res.json(MOCK_PRODUCTS);
+// --- PROFILE & ADDRESS ROUTES ---
+app.get('/api/profile', protect, async (req, res) => {
+    res.json(req.user);
 });
 
-app.get('/api/categories', (req, res) => {
-    const categories = CATEGORIES.map(name => ({
+app.post('/api/addresses', protect, async (req, res) => {
+    const { street, city, state, zipCode, country, isDefault } = req.body;
+    const user = req.user;
+    
+    if (isDefault) {
+        user.addresses.forEach(addr => addr.isDefault = false);
+    }
+    
+    user.addresses.push({ street, city, state, zipCode, country, isDefault });
+    await user.save();
+    res.status(201).json(user.addresses);
+});
+
+app.put('/api/addresses/:id', protect, async (req, res) => {
+    const user = req.user;
+    const addr = user.addresses.id(req.params.id);
+    if (addr) {
+        const { street, city, state, zipCode, country, isDefault } = req.body;
+        if (isDefault) user.addresses.forEach(a => a.isDefault = false);
+        
+        addr.street = street || addr.street;
+        addr.city = city || addr.city;
+        addr.state = state || addr.state;
+        addr.zipCode = zipCode || addr.zipCode;
+        addr.country = country || addr.country;
+        addr.isDefault = isDefault !== undefined ? isDefault : addr.isDefault;
+        
+        await user.save();
+        res.json(user.addresses);
+    } else {
+        res.status(404).json({ message: 'Address not found' });
+    }
+});
+
+app.delete('/api/addresses/:id', protect, async (req, res) => {
+    const user = req.user;
+    user.addresses = user.addresses.filter(a => a._id.toString() !== req.params.id);
+    await user.save();
+    res.json(user.addresses);
+});
+
+// --- WISHLIST ROUTES ---
+app.post('/api/wishlist', protect, async (req, res) => {
+    const { wishlist } = req.body;
+    req.user.wishlist = wishlist;
+    await req.user.save();
+    res.json(req.user.wishlist);
+});
+
+// --- ORDER ROUTES ---
+app.post('/api/orders', protect, async (req, res) => {
+    const { items, totalAmount, shippingAddress } = req.body;
+    if (items && items.length === 0) {
+        return res.status(400).json({ message: 'No order items' });
+    }
+    
+    const order = new Order({
+        user: req.user._id,
+        items,
+        totalAmount,
+        shippingAddress
+    });
+    
+    const createdOrder = await order.save();
+    res.status(201).json(createdOrder);
+});
+
+app.get('/api/orders/myorders', protect, async (req, res) => {
+    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.json(orders);
+});
+
+// --- PRODUCT ROUTES ---
+app.get('/api/products', async (req, res) => {
+    const products = await Product.find({});
+    res.json(products);
+});
+
+app.get('/api/categories', async (req, res) => {
+    const products = await Product.find({});
+    const categories = [...new Set(products.map(p => p.category))];
+    const categoryData = categories.map(name => ({
         name,
-        badge: 'New Arrival',
-        count: MOCK_PRODUCTS.filter(p => p.category === name).length
+        badge: 'Collection',
+        count: products.filter(p => p.category === name).length
     }));
-    res.json(categories);
+    res.json(categoryData);
 });
 
 app.get('/api/health', (req, res) => {
@@ -94,5 +183,3 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
 });
 
-// Keep-alive
-setInterval(() => {}, 1000 * 60 * 60);

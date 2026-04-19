@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { fmt } from '../utils/format';
-import qrImage from '../assets/qr-code.png';
+import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../data/constants';
 
 export default function CheckoutPage({ cart, clearCart }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [shippingInfo, setShippingInfo] = useState({
-    name: '',
-    email: '',
+    name: user?.name || '',
+    email: user?.email || '',
     address: '',
     city: '',
     zip: '',
@@ -27,14 +26,57 @@ export default function CheckoutPage({ cart, clearCart }) {
     }
   }, [cart, navigate, step]);
 
-  const handleNext = () => {
+  const selectSavedAddress = (addr) => {
+    setShippingInfo({
+      ...shippingInfo,
+      address: addr.street,
+      city: addr.city,
+      zip: addr.zipCode,
+    });
+  };
+
+  const handleNext = async () => {
     if (step === 3) {
       setLoading(true);
-      setTimeout(() => {
+      try {
+        const orderData = {
+          items: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            price: item.price,
+            qty: item.qty,
+            image: item.image
+          })),
+          totalAmount: total,
+          shippingAddress: {
+            street: shippingInfo.address,
+            city: shippingInfo.city,
+            state: '', // Could add state to shippingInfo
+            zipCode: shippingInfo.zip,
+            country: 'India'
+          }
+        };
+
+        const res = await fetch(`${API_URL}/orders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${user.token}`
+          },
+          body: JSON.stringify(orderData)
+        });
+
+        if (res.ok) {
+          setStep(4);
+        } else {
+          alert('Failed to save order. Please try again.');
+        }
+      } catch (err) {
+        console.error('Order placement failed:', err);
+        alert('An error occurred. Please try again.');
+      } finally {
         setLoading(false);
-        setStep(4);
-        // In a real app, clearCart() would be called here
-      }, 3000);
+      }
     } else {
       setStep(step + 1);
     }
@@ -160,6 +202,33 @@ export default function CheckoutPage({ cart, clearCart }) {
         {step === 1 && (
           <div className="reveal">
             <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: '2rem', marginBottom: '2rem' }}>Shipping Information</h2>
+            
+            {user?.addresses?.length > 0 && (
+              <div style={{ marginBottom: '2rem' }}>
+                <label style={s.label}>Use Saved Address</label>
+                <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '1rem' }}>
+                  {user.addresses.map((addr) => (
+                    <button
+                      key={addr._id}
+                      onClick={() => selectSavedAddress(addr)}
+                      style={{
+                        padding: '1rem',
+                        background: 'var(--bg3)',
+                        border: shippingInfo.address === addr.street ? '2px solid var(--gold)' : '1px solid var(--border)',
+                        borderRadius: 12,
+                        textAlign: 'left',
+                        minWidth: '200px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <div style={{ fontWeight: 700, fontSize: '0.8rem', color: '#fff' }}>{addr.street}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text3)' }}>{addr.city}, {addr.zipCode}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
               <div>
                 <label style={s.label}>Full Name</label>

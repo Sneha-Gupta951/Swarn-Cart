@@ -42,6 +42,34 @@ function AppContent() {
   }, []);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setCart([]);
+      setWishlist([]);
+    } else if (user && user.wishlist) {
+      // Initialize wishlist from user data on login
+      const initialWishlist = products.filter(p => user.wishlist.includes(p.id));
+      if (initialWishlist.length > 0 && wishlist.length === 0) {
+        setWishlist(initialWishlist);
+      }
+    }
+  }, [isAuthenticated, user, products]);
+
+  // Sync wishlist to backend
+  useEffect(() => {
+    if (isAuthenticated && user && wishlist.length > 0) {
+      const wishlistIds = wishlist.map(p => p.id);
+      fetch(`${API_URL}/wishlist`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify({ wishlist: wishlistIds })
+      }).catch(err => console.error('Failed to sync wishlist:', err));
+    }
+  }, [wishlist, isAuthenticated, user]);
+
+  useEffect(() => {
     document.body.className = dark ? '' : 'light';
   }, [dark]);
 

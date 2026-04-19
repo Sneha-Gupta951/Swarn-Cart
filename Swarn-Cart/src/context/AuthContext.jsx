@@ -18,8 +18,24 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('swarn_user');
   };
 
+  const updateAddresses = (newAddresses) => {
+    setUser(prev => {
+      const updated = { ...prev, addresses: newAddresses };
+      localStorage.setItem('swarn_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const updateWishlist = (newWishlist) => {
+    setUser(prev => {
+      const updated = { ...prev, wishlist: newWishlist };
+      localStorage.setItem('swarn_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, updateAddresses, updateWishlist, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
