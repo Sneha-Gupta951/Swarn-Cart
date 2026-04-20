@@ -1,5 +1,9 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../data/constants';
+import { fmt } from '../utils/format';
+import qrImage from '../assets/qr-code.png';
 
 export default function CheckoutPage({ cart, clearCart }) {
   const navigate = useNavigate();
