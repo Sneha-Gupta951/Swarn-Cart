@@ -50,7 +50,28 @@ const LoginPage = () => {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
+  const handleForgotPassword = async () => {
+    if (!formData.email) {
+      setError('Please enter your email address first');
+      return;
+    }
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Failed to process request');
+      alert(`Success! ${data.message}`);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };  const handleGoogleSuccess = async (credentialResponse) => {
     setLoading(true);
     setError('');
     try {
@@ -70,6 +91,7 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
 
   const s = {
     container: {
@@ -245,6 +267,16 @@ const LoginPage = () => {
               value={formData.password}
               onChange={e => setFormData({ ...formData, password: e.target.value })}
             />
+            {isLogin && (
+              <div style={{ textAlign: 'right', marginTop: '0.5rem' }}>
+                <span 
+                  style={{ ...s.link, fontSize: '0.75rem', fontWeight: 500 }} 
+                  onClick={handleForgotPassword}
+                >
+                  Forgot Password?
+                </span>
+              </div>
+            )}
           </div>
           <button type="submit" style={s.btn} disabled={loading}>
             {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Get Started')}

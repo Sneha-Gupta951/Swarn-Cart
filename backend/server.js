@@ -94,6 +94,29 @@ app.post('/api/auth/login', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+app.post('/api/auth/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'No user found with this email' });
+        }
+
+        const tempPassword = 'swarn' + Math.floor(Math.random() * 1000);
+        user.password = tempPassword;
+        await user.save();
+
+        console.log(`🔑 Password reset for ${email}. New temp password: ${tempPassword}`);
+        
+        res.json({ 
+            message: `Your password has been reset to: ${tempPassword}. Please log in and change it immediately.` 
+        });
+    } catch (error) {
+        console.error('❌ Forgot password error:', error.message);
+        res.status(500).json({ message: error.message });
+    }
+});
 
 app.post('/api/auth/google', async (req, res) => {
     console.log('🌐 Google Auth attempt');
