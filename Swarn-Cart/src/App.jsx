@@ -11,6 +11,7 @@ import CategoryHome from './pages/CategoryHome';
 import ProductsPage from './pages/ProductsPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrdersPage from './pages/OrdersPage';
+import LoginPage from './pages/LoginPage';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './styles/index.css';
 
@@ -175,6 +176,8 @@ function AppContent() {
           } 
         />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<LoginPage />} />
       </Routes>
 
       <CartDrawer

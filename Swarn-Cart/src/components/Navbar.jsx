@@ -291,8 +291,8 @@ export function Navbar({ dark, setDark, cartCount, wishlistCount, onCartClick, o
             </div>
           ) : (
             <>
-              <button onClick={onLoginClick} style={{ background:'transparent', color:'#fff', border:'none', cursor:'pointer', fontSize:'.85rem' }}>Log In</button>
-              <button onClick={onSignupClick} style={{ background:'var(--gold)', color:'#000', border:'none', padding:'.5rem 1.2rem', borderRadius:6, fontWeight:700, cursor:'pointer', fontSize:'.8rem' }}>Sign Up</button>
+              <Link to="/login" style={{ background:'transparent', color:'#fff', textDecoration:'none', cursor:'pointer', fontSize:'.85rem' }}>Log In</Link>
+              <Link to="/signup" style={{ background:'var(--gold)', color:'#000', textDecoration:'none', padding:'.5rem 1.2rem', borderRadius:6, fontWeight:700, cursor:'pointer', fontSize:'.8rem' }}>Sign Up</Link>
             </>
           )}
         </div>
