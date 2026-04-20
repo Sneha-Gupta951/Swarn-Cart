@@ -15,6 +15,22 @@ export function AuthModal({ type, onClose }) {
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
+    
+    // Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+    if (!isLogin && !formData.name.trim()) {
+      setError('Please enter your full name');
+      return;
+    }
+
     setLoading(true);
     setError('');
     const endpoint = isLogin ? '/auth/login' : '/auth/register';
