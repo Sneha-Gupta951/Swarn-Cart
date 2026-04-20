@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { CartDrawer } from './components/CartDrawer';
-import { AuthModal } from './components/AuthModal';
 import { useScrollReveal } from './hooks/useScrollReveal';
 import { API_URL } from './data/constants';
 import HomePage from './pages/HomePage';
@@ -23,9 +22,9 @@ function AppContent() {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [authModal, setAuthModal] = useState(null);
   const [search, setSearch] = useState('');
   const location = useLocation();
+  const navigate = useNavigate();
 
   useScrollReveal();
 
@@ -84,7 +83,7 @@ function AppContent() {
 
   const addToCart = useCallback((product) => {
     if (!isAuthenticated) {
-      setAuthModal('login');
+      navigate('/login');
       return;
     }
     setCart(prev => {
@@ -96,7 +95,7 @@ function AppContent() {
 
   const toggleWishlist = useCallback((product) => {
     if (!isAuthenticated) {
-      setAuthModal('login');
+      navigate('/login');
       return;
     }
     setWishlist(prev => {
@@ -125,8 +124,8 @@ function AppContent() {
         cartCount={cartCount} 
         wishlistCount={wishlist.length}
         onCartClick={() => setDrawerOpen(true)} 
-        onLoginClick={() => setAuthModal('login')}
-        onSignupClick={() => setAuthModal('signup')}
+        onLoginClick={() => navigate('/login')}
+        onSignupClick={() => navigate('/signup')}
         search={search}
         setSearch={setSearch}
       />
@@ -187,7 +186,6 @@ function AppContent() {
         onRemove={removeFromCart}
         onQtyChange={updateQty}
       />
-      <AuthModal type={authModal} onClose={() => setAuthModal(null)} />
     </>
   );
 }
