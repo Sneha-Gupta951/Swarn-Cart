@@ -41,6 +41,7 @@ const generateToken = (id) => {
 
 // --- AUTH ROUTES ---
 app.post('/api/auth/register', async (req, res) => {
+    console.log('📝 Register attempt:', req.body.email);
     try {
         const { name, email, password } = req.body;
         const userExists = await User.findOne({ email });
@@ -50,6 +51,7 @@ app.post('/api/auth/register', async (req, res) => {
         }
 
         const user = await User.create({ name, email, password });
+        console.log('✅ User registered:', email);
         
         res.status(201).json({
             _id: user._id,
@@ -61,16 +63,19 @@ app.post('/api/auth/register', async (req, res) => {
             token: generateToken(user._id)
         });
     } catch (error) {
+        console.error('❌ Register error:', error.message);
         res.status(500).json({ message: error.message });
     }
 });
 
 app.post('/api/auth/login', async (req, res) => {
+    console.log('🔑 Login attempt:', req.body.email);
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
+            console.log('✅ User logged in:', email);
             res.json({
                 _id: user._id,
                 name: user.name,
@@ -81,14 +86,17 @@ app.post('/api/auth/login', async (req, res) => {
                 token: generateToken(user._id)
             });
         } else {
+            console.log('❌ Login failed: Invalid credentials');
             res.status(401).json({ message: 'Invalid email or password' });
         }
     } catch (error) {
+        console.error('❌ Login error:', error.message);
         res.status(500).json({ message: error.message });
     }
 });
 
 app.post('/api/auth/google', async (req, res) => {
+    console.log('🌐 Google Auth attempt');
     try {
         const { token } = req.body;
         const ticket = await googleClient.verifyIdToken({
@@ -96,6 +104,7 @@ app.post('/api/auth/google', async (req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
         const payload = ticket.getPayload();
+        console.log('✅ Google token verified for:', payload.email);
         
         let user = await User.findOne({ email: payload.email });
         
@@ -106,12 +115,13 @@ app.post('/api/auth/google', async (req, res) => {
                 email: payload.email,
                 picture: payload.picture
             });
+            console.log('✅ New Google user created');
         } else {
-            // Update profile if changed or link googleId
             user.googleId = payload.sub;
             user.name = payload.name;
             user.picture = payload.picture;
             await user.save();
+            console.log('✅ Existing user linked with Google');
         }
 
         res.json({
