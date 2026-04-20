@@ -6,4 +6,6 @@
  * Please use the respective API endpoints to fetch this data in components.
  */
 
-export const API_URL = '/api';
+export const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5001/api' 
+  : 'https://swarn-cart.onrender.com/api';
